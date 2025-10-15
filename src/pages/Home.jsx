@@ -1,4 +1,6 @@
+
 import React from 'react';
+import banner from '../assets/banner.png';
 
 const Home = () => {
   return (
@@ -6,7 +8,7 @@ const Home = () => {
       <h1>Welcome to Our Company</h1>
       <div style={{ marginBottom: '20px' }}>
         <img 
-          src="https://via.placeholder.com/600x300/4a90e2/ffffff?text=Company+Banner" 
+          src={banner}
           alt="Company Banner"
           style={{ width: '100%', height: '300px', objectFit: 'cover', borderRadius: '8px' }}
         />
