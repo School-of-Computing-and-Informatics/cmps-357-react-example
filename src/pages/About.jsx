@@ -21,7 +21,8 @@ const About = () => {
           backgroundColor: '#e3f2fd', 
           padding: '15px', 
           borderLeft: '4px solid #2196f3',
-          margin: '20px 0'
+          margin: '20px 0',
+          color: '#1565c0'
         }}>
           "To democratize technology by making cutting-edge solutions accessible, 
           affordable, and tailored to every business's unique needs."
@@ -33,7 +34,8 @@ const About = () => {
             backgroundColor: '#f5f5f5', 
             padding: '20px', 
             borderRadius: '8px',
-            textAlign: 'center'
+            textAlign: 'center',
+            color: '#333'
           }}>
             <div style={{ 
               width: '80px', 
@@ -50,9 +52,9 @@ const About = () => {
             }}>
               JS
             </div>
-            <h4>Jane Smith</h4>
+            <h4 style={{ color: '#333' }}>Jane Smith</h4>
             <p style={{ fontSize: '14px', color: '#666' }}>CEO & Founder</p>
-            <p style={{ fontSize: '13px' }}>
+            <p style={{ fontSize: '13px', color: '#333' }}>
               Former Google engineer with 15 years of experience in enterprise software.
             </p>
           </div>
@@ -61,7 +63,8 @@ const About = () => {
             backgroundColor: '#f5f5f5', 
             padding: '20px', 
             borderRadius: '8px',
-            textAlign: 'center'
+            textAlign: 'center',
+            color: '#333'
           }}>
             <div style={{ 
               width: '80px', 
@@ -78,9 +81,9 @@ const About = () => {
             }}>
               MJ
             </div>
-            <h4>Michael Johnson</h4>
+            <h4 style={{ color: '#333' }}>Michael Johnson</h4>
             <p style={{ fontSize: '14px', color: '#666' }}>CTO</p>
-            <p style={{ fontSize: '13px' }}>
+            <p style={{ fontSize: '13px', color: '#333' }}>
               Cloud architecture specialist with expertise in scalable systems.
             </p>
           </div>
@@ -89,7 +92,8 @@ const About = () => {
             backgroundColor: '#f5f5f5', 
             padding: '20px', 
             borderRadius: '8px',
-            textAlign: 'center'
+            textAlign: 'center',
+            color: '#333'
           }}>
             <div style={{ 
               width: '80px', 
@@ -106,9 +110,9 @@ const About = () => {
             }}>
               SL
             </div>
-            <h4>Sarah Lee</h4>
+            <h4 style={{ color: '#333' }}>Sarah Lee</h4>
             <p style={{ fontSize: '14px', color: '#666' }}>Head of Design</p>
-            <p style={{ fontSize: '13px' }}>
+            <p style={{ fontSize: '13px', color: '#333' }}>
               UX/UI expert focused on creating intuitive user experiences.
             </p>
           </div>
@@ -147,12 +151,13 @@ const About = () => {
           backgroundColor: '#f8f9fa', 
           padding: '20px', 
           borderRadius: '8px', 
-          marginTop: '20px' 
+          marginTop: '20px',
+          color: '#333'
         }}>
-          <p><strong>Address:</strong> 123 Innovation Drive, Silicon Valley, CA 94025</p>
-          <p><strong>Phone:</strong> +1 (555) 123-4567</p>
-          <p><strong>Email:</strong> info@techsolutions.com</p>
-          <p><strong>Business Hours:</strong> Monday - Friday, 9:00 AM - 6:00 PM PST</p>
+          <p style={{ color: '#333' }}><strong>Address:</strong> 123 Innovation Drive, Silicon Valley, CA 94025</p>
+          <p style={{ color: '#333' }}><strong>Phone:</strong> +1 (555) 123-4567</p>
+          <p style={{ color: '#333' }}><strong>Email:</strong> info@techsolutions.com</p>
+          <p style={{ color: '#333' }}><strong>Business Hours:</strong> Monday - Friday, 9:00 AM - 6:00 PM PST</p>
         </div>
       </div>
     </div>

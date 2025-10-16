@@ -42,25 +42,26 @@ const Home = () => {
           backgroundColor: '#f8f9fa', 
           padding: '20px', 
           borderRadius: '8px', 
-          marginTop: '20px' 
+          marginTop: '20px',
+          color: '#333'
         }}>
-          <h4>Quick Stats</h4>
+          <h4 style={{ color: '#333' }}>Quick Stats</h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px' }}>
             <div style={{ textAlign: 'center' }}>
               <strong style={{ fontSize: '24px', color: '#4a90e2' }}>500+</strong>
-              <div>Projects Completed</div>
+              <div style={{ color: '#333' }}>Projects Completed</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <strong style={{ fontSize: '24px', color: '#4a90e2' }}>50+</strong>
-              <div>Team Members</div>
+              <div style={{ color: '#333' }}>Team Members</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <strong style={{ fontSize: '24px', color: '#4a90e2' }}>13</strong>
-              <div>Years Experience</div>
+              <div style={{ color: '#333' }}>Years Experience</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <strong style={{ fontSize: '24px', color: '#4a90e2' }}>25+</strong>
-              <div>Countries Served</div>
+              <div style={{ color: '#333' }}>Countries Served</div>
             </div>
           </div>
         </div>
