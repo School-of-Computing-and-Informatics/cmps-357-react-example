@@ -7,7 +7,7 @@ import Media from '../pages/Media';
 const PageTransition = ({ transitionDuration = 1000 }) => {
   const location = useLocation();
   const [displayLocation, setDisplayLocation] = useState(location);
-  const [transitionStage, setTransitionStage] = useState('fadeIn');
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const previousPath = useRef(location.pathname);
 
   const pageOrder = ['/', '/about', '/media'];
@@ -24,10 +24,10 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
 
   useEffect(() => {
     if (location.pathname !== displayLocation.pathname) {
-      setTransitionStage('fadeOut');
+      setIsTransitioning(true);
       const timer = setTimeout(() => {
         setDisplayLocation(location);
-        setTransitionStage('fadeIn');
+        setIsTransitioning(false);
         previousPath.current = location.pathname;
       }, transitionDuration);
       return () => clearTimeout(timer);
@@ -36,34 +36,58 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
 
   const direction = getDirection(previousPath.current, location.pathname);
 
-  const getTransform = () => {
-    if (transitionStage === 'fadeOut') {
-      return direction === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
-    }
-    return 'translateX(0)';
-  };
-
   const containerStyle = {
     position: 'relative',
     width: '100%',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    minHeight: '100vh'
   };
 
-  const contentStyle = {
-    transform: getTransform(),
+  const exitingPageStyle = {
+    position: isTransitioning ? 'absolute' : 'relative',
+    width: '100%',
+    top: 0,
+    left: 0,
+    transform: isTransitioning 
+      ? (direction === 'left' ? 'translateX(-100%)' : 'translateX(100%)')
+      : 'translateX(0)',
     transition: `transform ${transitionDuration}ms ease-in-out`,
-    willChange: 'transform'
+    willChange: 'transform',
+    opacity: isTransitioning ? 0 : 1,
+    pointerEvents: isTransitioning ? 'none' : 'auto'
+  };
+
+  const incomingPageStyle = {
+    position: 'absolute',
+    width: '100%',
+    top: 0,
+    left: 0,
+    transform: isTransitioning 
+      ? 'translateX(0)'
+      : (direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)'),
+    transition: `transform ${transitionDuration}ms ease-in-out`,
+    willChange: 'transform',
+    pointerEvents: isTransitioning ? 'none' : 'auto'
   };
 
   return (
     <div style={containerStyle}>
-      <div style={contentStyle}>
+      <div style={exitingPageStyle}>
         <Routes location={displayLocation}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/media" element={<Media />} />
         </Routes>
       </div>
+      {isTransitioning && (
+        <div style={incomingPageStyle}>
+          <Routes location={location}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/media" element={<Media />} />
+          </Routes>
+        </div>
+      )}
     </div>
   );
 };
