@@ -9,6 +9,7 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
   const [displayLocation, setDisplayLocation] = useState(location);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [incomingActive, setIncomingActive] = useState(false);
+  const [outgoingActive, setOutgoingActive] = useState(false);
   const previousPath = useRef(location.pathname);
 
   const pageOrder = ['/', '/about', '/media'];
@@ -27,9 +28,11 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
     if (location.pathname !== displayLocation.pathname) {
       setIsTransitioning(true);
       setIncomingActive(true);
-      // Animate incoming page in after a tick
+      setOutgoingActive(true);
+      // Animate incoming/outgoing after a tick
       const enterTimer = setTimeout(() => {
         setIncomingActive(false);
+        setOutgoingActive(false);
       }, 20); // short delay to trigger transition
       // Complete transition after duration
       const exitTimer = setTimeout(() => {
@@ -58,12 +61,15 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
     width: '100%',
     top: 0,
     left: 0,
-    transform: isTransitioning 
-      ? (direction === 'left' ? 'translateX(-100%)' : 'translateX(100%)')
-      : 'translateX(0)',
+    transform:
+      isTransitioning
+        ? (outgoingActive
+            ? 'translateX(0)'
+            : (direction === 'left' ? 'translateX(-100%)' : 'translateX(100%)'))
+        : 'translateX(0)',
     transition: `transform ${transitionDuration}ms ease-in-out`,
     willChange: 'transform',
-    opacity: isTransitioning ? 0 : 1,
+    opacity: 1,
     pointerEvents: isTransitioning ? 'none' : 'auto'
   };
 
@@ -85,17 +91,15 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
 
   return (
     <div style={containerStyle}>
-      {/* Only render the outgoing page when not transitioning */}
-      {!isTransitioning && (
-        <div style={exitingPageStyle}>
-          <Routes location={displayLocation}>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/media" element={<Media />} />
-          </Routes>
-        </div>
-      )}
-      {/* Only render the incoming page during transition */}
+      {/* Outgoing page always rendered, animates out during transition */}
+      <div style={exitingPageStyle}>
+        <Routes location={displayLocation}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/media" element={<Media />} />
+        </Routes>
+      </div>
+      {/* Incoming page only rendered during transition */}
       {isTransitioning && (
         <div style={incomingPageStyle}>
           <Routes location={location}>
