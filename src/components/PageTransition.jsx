@@ -38,7 +38,7 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
 
   const containerStyle = {
     position: 'relative',
-    width: '100%',
+    width: '100vw', // Ensure full viewport width during transition
     overflow: 'hidden',
     minHeight: '100vh'
   };
