@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const Navigation = () => {
+const Navigation = ({ transitionDuration = 1000 }) => {
   const location = useLocation();
+  const [indicatorStyle, setIndicatorStyle] = useState({});
+  const linkRefs = useRef({});
 
   const navStyle = {
     backgroundColor: '#2c3e50',
@@ -31,7 +33,8 @@ const Navigation = () => {
     gap: '30px',
     listStyle: 'none',
     margin: 0,
-    padding: 0
+    padding: 0,
+    position: 'relative'
   };
 
   const linkStyle = {
@@ -41,16 +44,54 @@ const Navigation = () => {
     fontWeight: '500',
     padding: '8px 16px',
     borderRadius: '4px',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    position: 'relative',
+    zIndex: 2
   };
 
   const activeLinkStyle = {
     ...linkStyle,
-    backgroundColor: '#3498db',
     color: 'white'
   };
 
+  const selectionIndicatorStyle = {
+    position: 'absolute',
+    backgroundColor: '#3498db',
+    borderRadius: '4px',
+    transition: `all ${transitionDuration}ms ease-in-out`,
+    zIndex: 1,
+    ...indicatorStyle
+  };
+
   const isActive = (path) => location.pathname === path;
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      const activePath = location.pathname;
+      const activeLink = linkRefs.current[activePath];
+      
+      if (activeLink) {
+        const rect = activeLink.getBoundingClientRect();
+        const parentRect = activeLink.parentElement.parentElement.getBoundingClientRect();
+        
+        setIndicatorStyle({
+          width: `${rect.width}px`,
+          height: `${rect.height}px`,
+          left: `${rect.left - parentRect.left}px`,
+          top: `${rect.top - parentRect.top}px`
+        });
+      }
+    };
+
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(updateIndicator, 0);
+    window.addEventListener('resize', updateIndicator);
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updateIndicator);
+    };
+  }, [location.pathname]);
 
   return (
     <nav style={navStyle}>
@@ -59,9 +100,11 @@ const Navigation = () => {
           TechSolutions
         </Link>
         <ul style={navLinksStyle}>
+          <div style={selectionIndicatorStyle}></div>
           <li>
             <Link 
               to="/" 
+              ref={(el) => linkRefs.current['/'] = el}
               style={isActive('/') ? activeLinkStyle : linkStyle}
               onMouseOver={(e) => {
                 if (!isActive('/')) {
@@ -80,6 +123,7 @@ const Navigation = () => {
           <li>
             <Link 
               to="/about" 
+              ref={(el) => linkRefs.current['/about'] = el}
               style={isActive('/about') ? activeLinkStyle : linkStyle}
               onMouseOver={(e) => {
                 if (!isActive('/about')) {
@@ -98,6 +142,7 @@ const Navigation = () => {
           <li>
             <Link 
               to="/media" 
+              ref={(el) => linkRefs.current['/media'] = el}
               style={isActive('/media') ? activeLinkStyle : linkStyle}
               onMouseOver={(e) => {
                 if (!isActive('/media')) {
