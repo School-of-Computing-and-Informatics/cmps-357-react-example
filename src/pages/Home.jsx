@@ -6,11 +6,11 @@ const Home = () => {
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
       <h1>Welcome to Our Company</h1>
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '20px', height:'auto' }}>
         <img 
           src={banner}
           alt="Company Banner"
-          style={{ width: '100%', height: '300px', objectFit: 'cover', borderRadius: '8px' }}
+          style={{ width: '100%', height: 'auto', objectFit: 'cover', borderRadius: '8px' }}
         />
       </div>
       
