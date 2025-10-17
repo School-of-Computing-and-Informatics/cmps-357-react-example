@@ -1,200 +1,169 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const Media = () => {
-  const colors = [
-    { name: 'Ocean Blue', hex: '#0077be', rgb: 'rgb(0, 119, 190)' },
-    { name: 'Sunset Orange', hex: '#ff6b35', rgb: 'rgb(255, 107, 53)' },
-    { name: 'Forest Green', hex: '#2d5016', rgb: 'rgb(45, 80, 22)' },
-    { name: 'Royal Purple', hex: '#663399', rgb: 'rgb(102, 51, 153)' },
-    { name: 'Crimson Red', hex: '#dc143c', rgb: 'rgb(220, 20, 60)' },
-    { name: 'Golden Yellow', hex: '#ffd700', rgb: 'rgb(255, 215, 0)' },
-    { name: 'Turquoise', hex: '#40e0d0', rgb: 'rgb(64, 224, 208)' },
-    { name: 'Hot Pink', hex: '#ff1493', rgb: 'rgb(255, 20, 147)' },
-    { name: 'Slate Gray', hex: '#708090', rgb: 'rgb(112, 128, 144)' },
-    { name: 'Lime Green', hex: '#32cd32', rgb: 'rgb(50, 205, 50)' },
-    { name: 'Deep Sky Blue', hex: '#00bfff', rgb: 'rgb(0, 191, 255)' },
-    { name: 'Coral', hex: '#ff7f50', rgb: 'rgb(255, 127, 80)' },
-  ];
+  const [timeStep, setTimeStep] = useState('Q1');
+  const [chartData, setChartData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const timeSteps = ['Q1', 'Q2', 'Q3', 'Q4'];
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/data/${timeStep}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const data = await response.json();
+        setChartData(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [timeStep]);
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1>Media Gallery - Color Showcase</h1>
+      <h1>Media Gallery - Data Visualization</h1>
       <p style={{ fontSize: '16px', marginBottom: '30px', color: '#666' }}>
-        A vibrant collection of colors displayed in various layouts and styles.
+        View dynamic data across different time periods with interactive charts.
       </p>
-      
-      {/* Grid Layout */}
-      <section style={{ marginBottom: '40px' }}>
-        <h2>Color Grid</h2>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: '20px',
-          marginBottom: '20px'
-        }}>
-          {colors.map((color, index) => (
-            <div 
-              key={index}
-              style={{
-                backgroundColor: color.hex,
-                height: '120px',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: index < 2 || index === 4 || index === 7 ? 'white' : 'black',
-                fontWeight: 'bold',
-                fontSize: '14px',
-                textAlign: 'center',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                cursor: 'pointer',
-                transition: 'transform 0.2s',
-              }}
-              onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-              onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
-            >
-              <div>
-                <div>{color.name}</div>
-                <div style={{ fontSize: '12px', opacity: 0.8 }}>{color.hex}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Horizontal Strips */}
+      {/* Time Step Selector */}
       <section style={{ marginBottom: '40px' }}>
-        <h2>Horizontal Color Strips</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {colors.slice(0, 6).map((color, index) => (
-            <div 
-              key={index}
-              style={{
-                backgroundColor: color.hex,
-                height: '60px',
-                borderRadius: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                paddingLeft: '20px',
-                color: index === 0 || index === 2 || index === 4 ? 'white' : 'black',
-                fontWeight: 'bold',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              }}
-            >
-              {color.name} - {color.rgb}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Circular Color Palette */}
-      <section style={{ marginBottom: '40px' }}>
-        <h2>Circular Color Palette</h2>
+        <h2>Select Time Period</h2>
         <div style={{ 
           display: 'flex', 
-          flexWrap: 'wrap', 
-          gap: '15px',
-          justifyContent: 'center',
-          padding: '20px'
+          gap: '15px', 
+          marginBottom: '30px',
+          flexWrap: 'wrap'
         }}>
-          {colors.map((color, index) => (
-            <div 
-              key={index}
+          {timeSteps.map((step) => (
+            <button
+              key={step}
+              onClick={() => setTimeStep(step)}
               style={{
-                width: '80px',
-                height: '80px',
-                backgroundColor: color.hex,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: index < 2 || index === 4 || index === 7 ? 'white' : 'black',
-                fontWeight: 'bold',
-                fontSize: '10px',
-                textAlign: 'center',
-                boxShadow: '0 3px 6px rgba(0,0,0,0.2)',
+                padding: '12px 24px',
+                fontSize: '16px',
+                fontWeight: '600',
+                border: 'none',
+                borderRadius: '8px',
+                backgroundColor: timeStep === step ? '#3498db' : '#ecf0f1',
+                color: timeStep === step ? 'white' : '#2c3e50',
                 cursor: 'pointer',
-                transition: 'all 0.3s',
+                transition: 'all 0.3s ease',
+                boxShadow: timeStep === step ? '0 4px 6px rgba(52, 152, 219, 0.3)' : '0 2px 4px rgba(0,0,0,0.1)',
               }}
               onMouseOver={(e) => {
-                e.target.style.transform = 'scale(1.1)';
-                e.target.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+                if (timeStep !== step) {
+                  e.target.style.backgroundColor = '#bdc3c7';
+                }
               }}
               onMouseOut={(e) => {
-                e.target.style.transform = 'scale(1)';
-                e.target.style.boxShadow = '0 3px 6px rgba(0,0,0,0.2)';
+                if (timeStep !== step) {
+                  e.target.style.backgroundColor = '#ecf0f1';
+                }
               }}
             >
-              {color.name.split(' ').map(word => word[0]).join('')}
-            </div>
+              {step}
+            </button>
           ))}
         </div>
       </section>
 
-      {/* Gradient Showcase */}
-      <section style={{ marginBottom: '40px' }}>
-        <h2>Gradient Combinations</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-          <div style={{
-            background: `linear-gradient(45deg, ${colors[0].hex}, ${colors[1].hex})`,
-            height: '100px',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '16px'
-          }}>
-            Ocean to Sunset
-          </div>
-          <div style={{
-            background: `linear-gradient(135deg, ${colors[2].hex}, ${colors[9].hex})`,
-            height: '100px',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '16px'
-          }}>
-            Forest to Lime
-          </div>
-          <div style={{
-            background: `linear-gradient(90deg, ${colors[3].hex}, ${colors[7].hex})`,
-            height: '100px',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '16px'
-          }}>
-            Purple to Pink
-          </div>
+      {/* Loading and Error States */}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '40px', fontSize: '18px', color: '#7f8c8d' }}>
+          Loading data...
         </div>
-      </section>
+      )}
 
-      {/* Rainbow Strip */}
-      <section>
-        <h2>Rainbow Strip</h2>
-        <div style={{
-          background: `linear-gradient(to right, ${colors.map(c => c.hex).join(', ')})`,
-          height: '80px',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          fontWeight: 'bold',
-          fontSize: '20px',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+      {error && (
+        <div style={{ 
+          textAlign: 'center', 
+          padding: '40px', 
+          fontSize: '18px', 
+          color: '#e74c3c',
+          backgroundColor: '#fadbd8',
+          borderRadius: '8px'
         }}>
-          Full Spectrum
+          Error: {error}
         </div>
-      </section>
+      )}
+
+      {/* Charts Section */}
+      {!loading && !error && chartData && (
+        <>
+          {/* Bar Chart */}
+          <section style={{ marginBottom: '40px' }}>
+            <h2>Sales and Revenue by Product - {timeStep}</h2>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: '20px', 
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart
+                  data={chartData.barData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="sales" fill="#8884d8" />
+                  <Bar dataKey="revenue" fill="#82ca9d" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+
+          {/* Pie Chart */}
+          <section style={{ marginBottom: '40px' }}>
+            <h2>Category Distribution - {timeStep}</h2>
+            <div style={{ 
+              backgroundColor: 'white', 
+              padding: '20px', 
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              display: 'flex',
+              justifyContent: 'center'
+            }}>
+              <ResponsiveContainer width="100%" height={400}>
+                <PieChart>
+                  <Pie
+                    data={chartData.pieData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={120}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {chartData.pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 };
