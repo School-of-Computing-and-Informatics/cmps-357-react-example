@@ -8,6 +8,7 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
   const location = useLocation();
   const [displayLocation, setDisplayLocation] = useState(location);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [incomingActive, setIncomingActive] = useState(false);
   const previousPath = useRef(location.pathname);
 
   const pageOrder = ['/', '/about', '/media'];
@@ -25,12 +26,21 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
   useEffect(() => {
     if (location.pathname !== displayLocation.pathname) {
       setIsTransitioning(true);
-      const timer = setTimeout(() => {
+      setIncomingActive(true);
+      // Animate incoming page in after a tick
+      const enterTimer = setTimeout(() => {
+        setIncomingActive(false);
+      }, 20); // short delay to trigger transition
+      // Complete transition after duration
+      const exitTimer = setTimeout(() => {
         setDisplayLocation(location);
         setIsTransitioning(false);
         previousPath.current = location.pathname;
       }, transitionDuration);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(enterTimer);
+        clearTimeout(exitTimer);
+      };
     }
   }, [location, displayLocation, transitionDuration]);
 
@@ -62,9 +72,12 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
     width: '100%',
     top: 0,
     left: 0,
-    transform: isTransitioning 
-      ? 'translateX(0)'
-      : (direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)'),
+    transform:
+      isTransitioning
+        ? (incomingActive
+            ? (direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)')
+            : 'translateX(0)')
+        : (direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)'),
     transition: `transform ${transitionDuration}ms ease-in-out`,
     willChange: 'transform',
     pointerEvents: isTransitioning ? 'none' : 'auto'
@@ -72,13 +85,17 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
 
   return (
     <div style={containerStyle}>
-      <div style={exitingPageStyle}>
-        <Routes location={displayLocation}>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/media" element={<Media />} />
-        </Routes>
-      </div>
+      {/* Only render the outgoing page when not transitioning */}
+      {!isTransitioning && (
+        <div style={exitingPageStyle}>
+          <Routes location={displayLocation}>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/media" element={<Media />} />
+          </Routes>
+        </div>
+      )}
+      {/* Only render the incoming page during transition */}
       {isTransitioning && (
         <div style={incomingPageStyle}>
           <Routes location={location}>
