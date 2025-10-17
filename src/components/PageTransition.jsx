@@ -91,18 +91,28 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
 
   return (
     <div style={containerStyle}>
-      {/* Outgoing page always rendered, animates out during transition */}
-      <div style={exitingPageStyle}>
-        <Routes location={displayLocation}>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/media" element={<Media />} />
-        </Routes>
-      </div>
-      {/* Incoming page only rendered during transition */}
-      {isTransitioning && (
-        <div style={incomingPageStyle}>
-          <Routes location={location}>
+      {/* During transition, render both outgoing and incoming pages */}
+      {isTransitioning ? (
+        <>
+          <div style={exitingPageStyle}>
+            <Routes location={displayLocation}>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/media" element={<Media />} />
+            </Routes>
+          </div>
+          <div style={incomingPageStyle}>
+            <Routes location={location}>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/media" element={<Media />} />
+            </Routes>
+          </div>
+        </>
+      ) : (
+        // After transition, only render the new page
+        <div style={{ width: '100%', minHeight: '100vh' }}>
+          <Routes location={displayLocation}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/media" element={<Media />} />
