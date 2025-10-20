@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Data files - exclude input XLSX files but keep output JSON
+data/input/*.xlsx
+data/input/*.xls
+data/input/*.csv

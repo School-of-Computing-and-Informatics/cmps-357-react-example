@@ -1,0 +1,214 @@
+{
+  "metadata": {
+    "generatedAt": "2025-10-20T14:22:48.907Z",
+    "catalogFile": "catalog-2024-2025.xlsx",
+    "offeringsFile": "cmps-offerings-spring-2025.xlsx",
+    "totalCourses": 3,
+    "totalSections": 4
+  },
+  "courses": [
+    {
+      "courseKey": "CMPS-160",
+      "subject": "CMPS",
+      "courseNumber": "160",
+      "name": "Introduction to Computer Science",
+      "creditHours": "3",
+      "description": "An introduction to computer science concepts, problem-solving techniques, and programming using a high-level language.",
+      "courseNotes": "",
+      "restrictions": "",
+      "totalActualEnrollment": 83,
+      "totalMaxEnrollment": 100,
+      "availableSeats": 17,
+      "enrollmentPercentage": "83.00",
+      "prerequisites": [
+        "MATH-140"
+      ],
+      "prerequisiteDetails": [
+        {
+          "courseKey": "MATH-140",
+          "name": "College Algebra",
+          "description": "Functions, graphs, polynomial and rational functions, exponential and logarithmic functions, systems of equations.",
+          "creditHours": "3",
+          "prerequisites": []
+        }
+      ],
+      "corequisites": [],
+      "sections": [
+        {
+          "crn": "10001",
+          "section": "001",
+          "courseTitle": "Introduction to Computer Science",
+          "status": "Active",
+          "instructionalMethod": "Face to Face",
+          "scheduleType": "Lecture",
+          "creditHours": "3",
+          "actualEnrollment": 45,
+          "maxEnrollment": 50,
+          "waitlistEnrollment": 3,
+          "waitlistCapacity": 10,
+          "instructor": "Dr. John Smith",
+          "meetingDay1": "MW",
+          "day1BeginTime": "10:00 AM",
+          "day1EndTime": "11:15 AM",
+          "day1Location": "SCI 101",
+          "meetingDay2": "",
+          "day2BeginTime": "",
+          "day2EndTime": "",
+          "day2Location": "",
+          "courseNotes": ""
+        },
+        {
+          "crn": "10002",
+          "section": "002",
+          "courseTitle": "Introduction to Computer Science",
+          "status": "Active",
+          "instructionalMethod": "Face to Face",
+          "scheduleType": "Lecture",
+          "creditHours": "3",
+          "actualEnrollment": 38,
+          "maxEnrollment": 50,
+          "waitlistEnrollment": 0,
+          "waitlistCapacity": 10,
+          "instructor": "Dr. Jane Doe",
+          "meetingDay1": "TR",
+          "day1BeginTime": "1:00 PM",
+          "day1EndTime": "2:15 PM",
+          "day1Location": "SCI 102",
+          "meetingDay2": "",
+          "day2BeginTime": "",
+          "day2EndTime": "",
+          "day2Location": "",
+          "courseNotes": ""
+        }
+      ]
+    },
+    {
+      "courseKey": "CMPS-280",
+      "subject": "CMPS",
+      "courseNumber": "280",
+      "name": "Data Structures",
+      "creditHours": "3",
+      "description": "Study of data structures including arrays, linked lists, stacks, queues, trees, and graphs. Algorithm analysis and implementation.",
+      "courseNotes": "",
+      "restrictions": "",
+      "totalActualEnrollment": 42,
+      "totalMaxEnrollment": 45,
+      "availableSeats": 3,
+      "enrollmentPercentage": "93.33",
+      "prerequisites": [
+        "CMPS-160"
+      ],
+      "prerequisiteDetails": [
+        {
+          "courseKey": "CMPS-160",
+          "name": "Introduction to Computer Science",
+          "description": "An introduction to computer science concepts, problem-solving techniques, and programming using a high-level language.",
+          "creditHours": "3",
+          "prerequisites": [
+            {
+              "courseKey": "MATH-140",
+              "name": "College Algebra",
+              "description": "Functions, graphs, polynomial and rational functions, exponential and logarithmic functions, systems of equations.",
+              "creditHours": "3",
+              "prerequisites": []
+            }
+          ]
+        }
+      ],
+      "corequisites": [],
+      "sections": [
+        {
+          "crn": "10003",
+          "section": "001",
+          "courseTitle": "Data Structures",
+          "status": "Active",
+          "instructionalMethod": "Face to Face",
+          "scheduleType": "Lecture",
+          "creditHours": "3",
+          "actualEnrollment": 42,
+          "maxEnrollment": 45,
+          "waitlistEnrollment": 5,
+          "waitlistCapacity": 10,
+          "instructor": "Dr. Robert Johnson",
+          "meetingDay1": "MW",
+          "day1BeginTime": "2:30 PM",
+          "day1EndTime": "3:45 PM",
+          "day1Location": "SCI 201",
+          "meetingDay2": "",
+          "day2BeginTime": "",
+          "day2EndTime": "",
+          "day2Location": "",
+          "courseNotes": "Programming assignments required."
+        }
+      ]
+    },
+    {
+      "courseKey": "CMPS-390",
+      "subject": "CMPS",
+      "courseNumber": "390",
+      "name": "Database Systems",
+      "creditHours": "3",
+      "description": "Introduction to database design, SQL, normalization, and database management systems.",
+      "courseNotes": "",
+      "restrictions": "Junior standing",
+      "totalActualEnrollment": 28,
+      "totalMaxEnrollment": 40,
+      "availableSeats": 12,
+      "enrollmentPercentage": "70.00",
+      "prerequisites": [
+        "CMPS-280"
+      ],
+      "prerequisiteDetails": [
+        {
+          "courseKey": "CMPS-280",
+          "name": "Data Structures",
+          "description": "Study of data structures including arrays, linked lists, stacks, queues, trees, and graphs. Algorithm analysis and implementation.",
+          "creditHours": "3",
+          "prerequisites": [
+            {
+              "courseKey": "CMPS-160",
+              "name": "Introduction to Computer Science",
+              "description": "An introduction to computer science concepts, problem-solving techniques, and programming using a high-level language.",
+              "creditHours": "3",
+              "prerequisites": [
+                {
+                  "courseKey": "MATH-140",
+                  "name": "College Algebra",
+                  "description": "Functions, graphs, polynomial and rational functions, exponential and logarithmic functions, systems of equations.",
+                  "creditHours": "3",
+                  "prerequisites": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "corequisites": [],
+      "sections": [
+        {
+          "crn": "10004",
+          "section": "001",
+          "courseTitle": "Database Systems",
+          "status": "Active",
+          "instructionalMethod": "Face to Face",
+          "scheduleType": "Lecture",
+          "creditHours": "3",
+          "actualEnrollment": 28,
+          "maxEnrollment": 40,
+          "waitlistEnrollment": 0,
+          "waitlistCapacity": 10,
+          "instructor": "Dr. Sarah Williams",
+          "meetingDay1": "TR",
+          "day1BeginTime": "10:00 AM",
+          "day1EndTime": "11:15 AM",
+          "day1Location": "SCI 301",
+          "meetingDay2": "",
+          "day2BeginTime": "",
+          "day2EndTime": "",
+          "day2Location": "",
+          "courseNotes": "SQL knowledge helpful."
+        }
+      ]
+    }
+  ]
+}
