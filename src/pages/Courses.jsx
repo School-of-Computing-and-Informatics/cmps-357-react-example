@@ -195,20 +195,63 @@ const Courses = () => {
                 </div>
 
                 <h3 style={{ marginTop: '30px', marginBottom: '15px' }}>Section Enrollment</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart
-                    data={courseDetails.sections}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="section" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="actualEnrollment" fill="#27ae60" name="Enrolled" />
-                    <Bar dataKey="maxEnrollment" fill="#95a5a6" name="Capacity" />
-                  </BarChart>
-                </ResponsiveContainer>
+                {courseDetails.sections.length === 1 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 'Enrolled', value: courseDetails.sections[0].actualEnrollment, fill: COLORS[0] },
+                          { name: 'Available', value: Math.max(courseDetails.sections[0].maxEnrollment - courseDetails.sections[0].actualEnrollment, 0), fill: COLORS[1] }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={true}
+                        label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                        outerRadius={120}
+                        dataKey="value"
+                      >
+                        <Cell key="cell-enrolled" fill={COLORS[0]} />
+                        <Cell key="cell-available" fill={COLORS[1]} />
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '24px',
+                    marginBottom: '24px'
+                  }}>
+                    {courseDetails.sections.map((section, idx) => (
+                      <div key={idx} style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.07)', padding: '16px' }}>
+                        <h4 style={{ margin: '0 0 10px 0', color: '#2c3e50', fontSize: '18px' }}>Section {section.section}</h4>
+                        <ResponsiveContainer width="100%" height={220}>
+                          <PieChart>
+                            <Pie
+                              data={[
+                                { name: 'Enrolled', value: section.actualEnrollment, fill: COLORS[0] },
+                                { name: 'Available', value: Math.max(section.maxEnrollment - section.actualEnrollment, 0), fill: COLORS[1] }
+                              ]}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={true}
+                              label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                              outerRadius={80}
+                              dataKey="value"
+                            >
+                              <Cell key="cell-enrolled" fill={COLORS[0]} />
+                              <Cell key="cell-available" fill={COLORS[1]} />
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 <div style={{ marginTop: '20px' }}>
                   <h3 style={{ marginBottom: '10px' }}>Sections ({courseDetails.sections.length})</h3>
