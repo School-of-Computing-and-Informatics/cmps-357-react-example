@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Data files (XLSX input files should be managed separately)
+data/input/*.xlsx
+data/output/*.json

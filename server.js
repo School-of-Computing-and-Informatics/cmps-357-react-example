@@ -1,5 +1,11 @@
 import express from 'express';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 3001;
@@ -86,6 +92,110 @@ app.get('/api/data/:timeStep', (req, res) => {
 // API endpoint to get all available time steps
 app.get('/api/timesteps', (req, res) => {
   res.json(Object.keys(mockData));
+});
+
+// Helper function to read course data from JSON file
+function getCourseData() {
+  const courseDataPath = path.join(__dirname, 'data/output/processed-courses.json');
+  
+  if (!fs.existsSync(courseDataPath)) {
+    return null;
+  }
+  
+  try {
+    const data = fs.readFileSync(courseDataPath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error reading course data:', error);
+    return null;
+  }
+}
+
+// API endpoint to get all course data
+app.get('/api/courses', (req, res) => {
+  const courseData = getCourseData();
+  
+  if (!courseData) {
+    res.status(404).json({ 
+      error: 'Course data not found',
+      message: 'Please run "npm run preprocess" to generate course data from XLSX files'
+    });
+    return;
+  }
+  
+  res.json(courseData);
+});
+
+// API endpoint to get subject summaries only
+app.get('/api/courses/subjects', (req, res) => {
+  const courseData = getCourseData();
+  
+  if (!courseData) {
+    res.status(404).json({ 
+      error: 'Course data not found',
+      message: 'Please run "npm run preprocess" to generate course data from XLSX files'
+    });
+    return;
+  }
+  
+  res.json({
+    subjects: courseData.subjectSummary,
+    metadata: courseData.metadata
+  });
+});
+
+// API endpoint to get details for a specific subject
+app.get('/api/courses/subjects/:subject', (req, res) => {
+  const { subject } = req.params;
+  const courseData = getCourseData();
+  
+  if (!courseData) {
+    res.status(404).json({ 
+      error: 'Course data not found',
+      message: 'Please run "npm run preprocess" to generate course data from XLSX files'
+    });
+    return;
+  }
+  
+  const subjectData = courseData.subjectSummary.find(s => s.subject === subject.toUpperCase());
+  
+  if (!subjectData) {
+    res.status(404).json({ error: 'Subject not found' });
+    return;
+  }
+  
+  // Get all course details for this subject
+  const subjectCourses = courseData.courseDetails.filter(c => c.subject === subject.toUpperCase());
+  
+  res.json({
+    summary: subjectData,
+    courses: subjectCourses
+  });
+});
+
+// API endpoint to get details for a specific course
+app.get('/api/courses/:subject/:courseNumber', (req, res) => {
+  const { subject, courseNumber } = req.params;
+  const courseData = getCourseData();
+  
+  if (!courseData) {
+    res.status(404).json({ 
+      error: 'Course data not found',
+      message: 'Please run "npm run preprocess" to generate course data from XLSX files'
+    });
+    return;
+  }
+  
+  const courses = courseData.courseDetails.filter(
+    c => c.subject === subject.toUpperCase() && c.courseNumber === courseNumber
+  );
+  
+  if (courses.length === 0) {
+    res.status(404).json({ error: 'Course not found' });
+    return;
+  }
+  
+  res.json(courses);
 });
 
 app.listen(PORT, () => {

@@ -27,13 +27,15 @@ Client will run on http://localhost:5173
 
 ## API Endpoints
 
-### Get Available Time Steps
+### Chart Data Endpoints
+
+#### Get Available Time Steps
 ```
 GET /api/timesteps
 ```
 Returns: Array of available time steps (e.g., ["Q1", "Q2", "Q3", "Q4"])
 
-### Get Data for Specific Time Step
+#### Get Data for Specific Time Step
 ```
 GET /api/data/:timeStep
 ```
@@ -48,6 +50,56 @@ Example:
 ```bash
 curl http://localhost:3001/api/data/Q1
 ```
+
+### Course Data Endpoints
+
+#### Get All Course Data
+```
+GET /api/courses
+```
+Returns: Complete processed course data including subjects, course details, and metadata.
+
+#### Get Subject Summaries
+```
+GET /api/courses/subjects
+```
+Returns: Subject-level summaries with enrollment statistics.
+
+Example:
+```bash
+curl http://localhost:3001/api/courses/subjects
+```
+
+#### Get Specific Subject Details
+```
+GET /api/courses/subjects/:subject
+```
+Parameters:
+- `subject`: Subject code (e.g., CMPS, INFS)
+
+Returns: Summary and detailed course information for the specified subject.
+
+Example:
+```bash
+curl http://localhost:3001/api/courses/subjects/CMPS
+```
+
+#### Get Specific Course Details
+```
+GET /api/courses/:subject/:courseNumber
+```
+Parameters:
+- `subject`: Subject code (e.g., CMPS)
+- `courseNumber`: Course number (e.g., 280)
+
+Returns: All sections of the specified course.
+
+Example:
+```bash
+curl http://localhost:3001/api/courses/CMPS/280
+```
+
+**Note:** Course data endpoints require preprocessed data. Run `npm run preprocess` first to generate the data from XLSX files. See [PREPROCESSING_README.md](./PREPROCESSING_README.md) for details.
 
 ## Features
 
