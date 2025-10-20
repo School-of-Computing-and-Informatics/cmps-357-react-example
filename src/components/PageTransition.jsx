@@ -3,6 +3,7 @@ import { useLocation, Routes, Route } from 'react-router-dom';
 import Home from '../pages/Home';
 import About from '../pages/About';
 import Media from '../pages/Media';
+import Courses from '../pages/Courses';
 
 const PageTransition = ({ transitionDuration = 1000 }) => {
   const location = useLocation();
@@ -12,7 +13,7 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
   const [outgoingActive, setOutgoingActive] = useState(false);
   const previousPath = useRef(location.pathname);
 
-  const pageOrder = ['/', '/about', '/media'];
+  const pageOrder = ['/', '/about', '/media', '/courses'];
 
   const getPageIndex = (path) => {
     return pageOrder.indexOf(path);
@@ -99,6 +100,7 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/media" element={<Media />} />
+              <Route path="/courses" element={<Courses />} />
             </Routes>
           </div>
           <div style={incomingPageStyle}>
@@ -106,6 +108,7 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/media" element={<Media />} />
+              <Route path="/courses" element={<Courses />} />
             </Routes>
           </div>
         </>
@@ -116,6 +119,7 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/media" element={<Media />} />
+            <Route path="/courses" element={<Courses />} />
           </Routes>
         </div>
       )}

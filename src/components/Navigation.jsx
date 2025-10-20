@@ -158,6 +158,25 @@ const Navigation = ({ transitionDuration = 1000 }) => {
               Media
             </Link>
           </li>
+          <li>
+            <Link 
+              to="/courses" 
+              ref={(el) => linkRefs.current['/courses'] = el}
+              style={isActive('/courses') ? activeLinkStyle : linkStyle}
+              onMouseOver={(e) => {
+                if (!isActive('/courses')) {
+                  e.target.style.backgroundColor = '#34495e';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (!isActive('/courses')) {
+                  e.target.style.backgroundColor = 'transparent';
+                }
+              }}
+            >
+              Courses
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
