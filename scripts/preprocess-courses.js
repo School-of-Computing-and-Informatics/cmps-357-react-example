@@ -14,16 +14,20 @@ const OUTPUT_FILE = path.join(__dirname, '../data/output/processed-courses.json'
 /**
  * Read XLSX file and convert to JSON
  */
-function readXLSX(filePath) {
+function readXLSX(filePath, forceSheetName = null) {
   if (!fs.existsSync(filePath)) {
     throw new Error(`File not found: ${filePath}`);
   }
-  
+
   const workbook = XLSX.readFile(filePath);
-  const sheetName = workbook.SheetNames[0];
+  let sheetName;
+  if (forceSheetName && workbook.SheetNames.includes(forceSheetName)) {
+    sheetName = forceSheetName;
+  } else {
+    sheetName = workbook.SheetNames[0];
+  }
   const worksheet = workbook.Sheets[sheetName];
   const data = XLSX.utils.sheet_to_json(worksheet);
-  
   return data;
 }
 
@@ -31,9 +35,39 @@ function readXLSX(filePath) {
  * Process catalog course data
  * Extract relevant fields from the catalog
  */
-function processCatalogData(catalogData) {
+function processRegistrarData(registrarData) {
+  // This function was actually processing catalog/offerings data, not registrar descriptions
+  // Swap logic: this should process catalogData (offerings/sections)
   const courses = [];
-  
+  registrarData.forEach(row => {
+    const course = {
+      catalogName: row['Catalog Name'] || '',
+      schoolCollege: row['School/College Name'] || '',
+      department: row['Department Name'] || '',
+      prefix: row.Prefix || '',
+      code: row.Code || '',
+      name: row.Name || '',
+      creditHours: row['Credit Hours:'] || 0,
+      description: row['Description (Rendered no HTML)'] || '',
+      prerequisites: row['Prerequisite(s): (Rendered no HTML)'] || '',
+      corequisites: row['Corequisite(s): (Rendered no HTML)'] || '',
+      restrictions: row['Restriction(s): (Rendered no HTML)'] || '',
+      courseLevel: row['Course Level:'] || '',
+      isActive: row['Is Active'] || ''
+    };
+    courses.push(course);
+  });
+  return courses;
+}
+
+/**
+ * Process registrar course data (course catalog/descriptions)
+ * This provides detailed course information
+ */
+function processCatalogData(catalogData) {
+  // This function was actually processing registrar data (course info/descriptions)
+  // Swap logic: this should process registrarData (sections/offerings)
+  const courses = [];
   catalogData.forEach(row => {
     const course = {
       term: row.Term || '',
@@ -52,43 +86,9 @@ function processCatalogData(catalogData) {
       department: row.Department || '',
       college: row.College || ''
     };
-    
     courses.push(course);
   });
-  
   return courses;
-}
-
-/**
- * Process registrar course data (course catalog/descriptions)
- * This provides detailed course information
- */
-function processRegistrarData(registrarData) {
-  const courseInfo = {};
-  
-  registrarData.forEach(row => {
-    const prefix = row.Prefix || '';
-    const code = row.Code || '';
-    const courseKey = `${prefix}${code}`;
-    
-    courseInfo[courseKey] = {
-      catalogName: row['Catalog Name'] || '',
-      schoolCollege: row['School/College Name'] || '',
-      department: row['Department Name'] || '',
-      prefix: prefix,
-      code: code,
-      name: row.Name || '',
-      creditHours: row['Credit Hours:'] || 0,
-      description: row['Description (Rendered no HTML)'] || '',
-      prerequisites: row['Prerequisite(s): (Rendered no HTML)'] || '',
-      corequisites: row['Corequisite(s): (Rendered no HTML)'] || '',
-      restrictions: row['Restriction(s): (Rendered no HTML)'] || '',
-      courseLevel: row['Course Level:'] || '',
-      isActive: row['Is Active'] || ''
-    };
-  });
-  
-  return courseInfo;
 }
 
 /**
@@ -193,24 +193,24 @@ function main() {
       process.exit(1);
     }
     
-    // Read the XLSX files
-    console.log('Reading catalog data...');
-    const catalogData = readXLSX(CATALOG_FILE);
-    console.log(`Loaded ${catalogData.length} catalog course records`);
-    
-    console.log('Reading registrar data...');
-    const registrarData = readXLSX(REGISTRAR_FILE);
-    console.log(`Loaded ${registrarData.length} registrar course records`);
-    
-    // Process the data
-    console.log('Processing catalog data...');
-    const catalogCourses = processCatalogData(catalogData);
-    
-    console.log('Processing registrar data...');
-    const registrarInfo = processRegistrarData(registrarData);
-    
-    console.log('Combining and analyzing data...');
-    const result = combineAndAnalyze(catalogCourses, registrarInfo);
+  // Read the XLSX files
+  console.log('Reading catalog data...');
+  const catalogData = readXLSX(CATALOG_FILE, 'Sheet1');
+  console.log(`Loaded ${catalogData.length} catalog course records`);
+
+  console.log('Reading registrar data...');
+  const registrarData = readXLSX(REGISTRAR_FILE);
+  console.log(`Loaded ${registrarData.length} registrar course records`);
+
+  // Process the data (SWAPPED: catalog gets catalogData, registrar gets registrarData)
+  console.log('Processing catalog data...');
+  const catalogCourses = processCatalogData(registrarData); // should be registrarData
+
+  console.log('Processing registrar data...');
+  const registrarInfo = processRegistrarData(catalogData); // should be catalogData
+
+  console.log('Combining and analyzing data...');
+  const result = combineAndAnalyze(catalogCourses, registrarInfo);
     
     // Ensure output directory exists
     const outputDir = path.dirname(OUTPUT_FILE);
