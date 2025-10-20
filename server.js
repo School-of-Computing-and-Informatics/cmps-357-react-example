@@ -1,5 +1,11 @@
 import express from 'express';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 3001;
@@ -86,6 +92,96 @@ app.get('/api/data/:timeStep', (req, res) => {
 // API endpoint to get all available time steps
 app.get('/api/timesteps', (req, res) => {
   res.json(Object.keys(mockData));
+});
+
+// Load course data from JSON file
+function loadCourseData() {
+  try {
+    const coursesPath = path.join(__dirname, 'data/output/courses.json');
+    const data = fs.readFileSync(coursesPath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error loading course data:', error.message);
+    return { metadata: {}, courses: [] };
+  }
+}
+
+// API endpoint to get all CMPS courses with enrollment data
+app.get('/api/courses', (req, res) => {
+  const courseData = loadCourseData();
+  
+  // Return simplified course list with enrollment summary
+  const courseList = courseData.courses.map(course => ({
+    courseKey: course.courseKey,
+    subject: course.subject,
+    courseNumber: course.courseNumber,
+    name: course.name,
+    creditHours: course.creditHours,
+    totalActualEnrollment: course.totalActualEnrollment,
+    totalMaxEnrollment: course.totalMaxEnrollment,
+    availableSeats: course.availableSeats,
+    enrollmentPercentage: course.enrollmentPercentage,
+    numberOfSections: course.sections.length,
+    prerequisites: course.prerequisites
+  }));
+  
+  res.json({
+    metadata: courseData.metadata,
+    courses: courseList
+  });
+});
+
+// API endpoint to get specific course details with prerequisites
+app.get('/api/courses/:courseCode', (req, res) => {
+  const { courseCode } = req.params;
+  const courseData = loadCourseData();
+  
+  // Find the course (case-insensitive)
+  const course = courseData.courses.find(c => 
+    c.courseKey.toUpperCase() === courseCode.toUpperCase()
+  );
+  
+  if (course) {
+    res.json(course);
+  } else {
+    res.status(404).json({ 
+      error: 'Course not found',
+      courseCode: courseCode
+    });
+  }
+});
+
+// API endpoint to get enrollment statistics
+app.get('/api/courses/stats/enrollment', (req, res) => {
+  const courseData = loadCourseData();
+  
+  const stats = {
+    totalCourses: courseData.courses.length,
+    totalSections: courseData.courses.reduce((sum, c) => sum + c.sections.length, 0),
+    totalEnrollment: courseData.courses.reduce((sum, c) => sum + c.totalActualEnrollment, 0),
+    totalCapacity: courseData.courses.reduce((sum, c) => sum + c.totalMaxEnrollment, 0),
+    averageUtilization: 0,
+    coursesWithHighEnrollment: 0, // > 90%
+    coursesWithMediumEnrollment: 0, // 50-90%
+    coursesWithLowEnrollment: 0 // < 50%
+  };
+  
+  stats.averageUtilization = stats.totalCapacity > 0
+    ? ((stats.totalEnrollment / stats.totalCapacity) * 100).toFixed(2)
+    : 0;
+  
+  courseData.courses.forEach(course => {
+    const utilization = parseFloat(course.enrollmentPercentage);
+    if (utilization > 90) {
+      stats.coursesWithHighEnrollment++;
+    } else if (utilization >= 50) {
+      stats.coursesWithMediumEnrollment++;
+    } else {
+      stats.coursesWithLowEnrollment++;
+    }
+  });
+  
+  res.json(stats);
 });
 
 app.listen(PORT, () => {
