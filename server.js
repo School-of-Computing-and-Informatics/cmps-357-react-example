@@ -131,24 +131,16 @@ app.get('/api/courses', (req, res) => {
   });
 });
 
-// API endpoint to get specific course details with prerequisites
-app.get('/api/courses/:courseCode', (req, res) => {
-  const { courseCode } = req.params;
+// API endpoint to get list of CMPS course numbers
+app.get('/api/courses/list', (req, res) => {
   const courseData = loadCourseData();
   
-  // Find the course (case-insensitive)
-  const course = courseData.courses.find(c => 
-    c.courseKey.toUpperCase() === courseCode.toUpperCase()
-  );
+  // Extract unique course numbers and sort them
+  const courseNumbers = courseData.courses
+    .map(c => c.courseNumber)
+    .sort((a, b) => parseInt(a) - parseInt(b));
   
-  if (course) {
-    res.json(course);
-  } else {
-    res.status(404).json({ 
-      error: 'Course not found',
-      courseCode: courseCode
-    });
-  }
+  res.json(courseNumbers);
 });
 
 // API endpoint to get enrollment statistics
@@ -182,6 +174,26 @@ app.get('/api/courses/stats/enrollment', (req, res) => {
   });
   
   res.json(stats);
+});
+
+// API endpoint to get specific course details with prerequisites
+app.get('/api/courses/:courseCode', (req, res) => {
+  const { courseCode } = req.params;
+  const courseData = loadCourseData();
+  
+  // Find the course (case-insensitive)
+  const course = courseData.courses.find(c => 
+    c.courseKey.toUpperCase() === courseCode.toUpperCase()
+  );
+  
+  if (course) {
+    res.json(course);
+  } else {
+    res.status(404).json({ 
+      error: 'Course not found',
+      courseCode: courseCode
+    });
+  }
 });
 
 app.listen(PORT, () => {
