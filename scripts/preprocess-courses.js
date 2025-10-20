@@ -27,15 +27,20 @@ function readXLSX(filePath, sheetName = null) {
 
 /**
  * Parse prerequisites from text
- * Extracts course codes like CMPS-160, CMPS 160, etc.
+ * Extracts course codes like CMPS-160, CMPS 160, CS 101, etc.
+ * Handles complex prerequisite strings with multiple courses and conditions.
+ * Examples:
+ *   "MATH 109, MATH 110, MATH 143, MATH 270, or MATH 272 with a grade of C or better"
+ *   "CMPS 260 with a grade of C or better and MATH 270 or MATH 272 with a grade of C or better"
  */
 function parsePrerequisites(prereqText) {
   if (!prereqText || prereqText.trim() === '') {
     return [];
   }
   
-  // Match patterns like CMPS-160, CMPS 160, CMPS160
-  const coursePattern = /([A-Z]{4})[\s-]?(\d{3})/gi;
+  // Match patterns with 2-4 letter prefix and 3 digit code
+  // Handles: CMPS-160, CMPS 160, CMPS160, CS 101, MATH 270, etc.
+  const coursePattern = /([A-Z]{2,4})[\s-]?(\d{3})/gi;
   const matches = [...prereqText.matchAll(coursePattern)];
   
   return matches.map(match => {
