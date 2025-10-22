@@ -137,7 +137,16 @@ const Courses = () => {
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
                 {(() => {
-                  const filteredCourses = allCourses.courses.filter(c => c.totalActualEnrollment > 0);
+                  const filteredCourses = allCourses.courses
+                    .map(c => {
+                      const diff = (c.totalMaxEnrollment || 0) - (c.totalActualEnrollment || 0);
+                      return {
+                        ...c,
+                        availableSeats: diff > 0 ? diff : 0,
+                        excessEnrollment: diff < 0 ? Math.abs(diff) : 0
+                      };
+                    })
+                    .filter(c => c.totalActualEnrollment > 0);
                   return (
                     <>
                       <ResponsiveContainer width="100%" height={400}>
@@ -155,8 +164,9 @@ const Courses = () => {
                           <YAxis />
                           <Tooltip />
                           <Legend />
-                          <Bar dataKey="totalActualEnrollment" fill="#3498db" name="Actual Enrollment" />
-                          <Bar dataKey="totalMaxEnrollment" fill="#95a5a6" name="Max Enrollment" />
+                          <Bar dataKey="totalActualEnrollment" fill="#3498db" name="Actual Enrollment" stackId="enroll" />
+                          <Bar dataKey="availableSeats" fill="#95a5a6" name="Available Seats" stackId="enroll" />
+                          <Bar dataKey="excessEnrollment" fill="#e74c3c" name="Excess Enrollment" stackId="enroll" />
                         </BarChart>
                       </ResponsiveContainer>
                       <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#ecf0f1', borderRadius: '6px' }}>
