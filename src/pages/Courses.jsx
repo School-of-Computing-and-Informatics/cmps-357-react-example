@@ -136,35 +136,42 @@ const Courses = () => {
                 borderRadius: '8px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart
-                    data={allCourses.courses}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="courseKey" 
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
-                    />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="totalActualEnrollment" fill="#3498db" name="Actual Enrollment" />
-                    <Bar dataKey="totalMaxEnrollment" fill="#95a5a6" name="Max Enrollment" />
-                  </BarChart>
-                </ResponsiveContainer>
-                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#ecf0f1', borderRadius: '6px' }}>
-                  <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>Summary</h3>
-                  <p style={{ margin: '5px 0' }}>Total Courses: {allCourses.courses.length}</p>
-                  <p style={{ margin: '5px 0' }}>
-                    Total Enrollment: {allCourses.courses.reduce((sum, c) => sum + c.totalActualEnrollment, 0)}
-                  </p>
-                  <p style={{ margin: '5px 0' }}>
-                    Total Capacity: {allCourses.courses.reduce((sum, c) => sum + c.totalMaxEnrollment, 0)}
-                  </p>
-                </div>
+                {(() => {
+                  const filteredCourses = allCourses.courses.filter(c => c.totalActualEnrollment > 0);
+                  return (
+                    <>
+                      <ResponsiveContainer width="100%" height={400}>
+                        <BarChart
+                          data={filteredCourses}
+                          margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis 
+                            dataKey="courseKey" 
+                            angle={-45}
+                            textAnchor="end"
+                            height={80}
+                          />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Bar dataKey="totalActualEnrollment" fill="#3498db" name="Actual Enrollment" />
+                          <Bar dataKey="totalMaxEnrollment" fill="#95a5a6" name="Max Enrollment" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#ecf0f1', borderRadius: '6px' }}>
+                        <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>Summary</h3>
+                        <p style={{ margin: '5px 0' }}>Total Courses: {filteredCourses.length}</p>
+                        <p style={{ margin: '5px 0' }}>
+                          Total Enrollment: {filteredCourses.reduce((sum, c) => sum + c.totalActualEnrollment, 0)}
+                        </p>
+                        <p style={{ margin: '5px 0' }}>
+                          Total Capacity: {filteredCourses.reduce((sum, c) => sum + c.totalMaxEnrollment, 0)}
+                        </p>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </section>
           )}
