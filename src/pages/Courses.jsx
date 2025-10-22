@@ -195,7 +195,7 @@ const Courses = () => {
                 </div>
 
                 <h3 style={{ marginTop: '30px', marginBottom: '15px' }}>Section Enrollment</h3>
-                {courseDetails.sections.length === 1 ? (
+                {courseDetails.sections.length === 1 && courseDetails.sections[0].actualEnrollment > 0 ? (
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                       <Pie
@@ -240,35 +240,37 @@ const Courses = () => {
                         gap: '24px',
                         marginBottom: '24px'
                       }}>
-                        {courseDetails.sections.map((section, idx) => (
-                          <div key={idx} style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.07)', padding: '16px' }}>
-                            <h4 style={{ margin: '0 0 10px 0', color: '#2c3e50', fontSize: '18px' }}>
-                              Section {section.section}
-                              {showLastName && section.instructor ? ` (${getLastName(section.instructor)})` : ''}
-                            </h4>
-                            <ResponsiveContainer width="100%" height={220}>
-                              <PieChart>
-                                <Pie
-                                  data={[
-                                    { name: 'Enrolled', value: section.actualEnrollment, fill: COLORS[0] },
-                                    { name: 'Available', value: Math.max(section.maxEnrollment - section.actualEnrollment, 0), fill: COLORS[1] }
-                                  ]}
-                                  cx="50%"
-                                  cy="50%"
-                                  labelLine={true}
-                                  label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
-                                  outerRadius={80}
-                                  dataKey="value"
-                                >
-                                  <Cell key="cell-enrolled" fill={COLORS[0]} />
-                                  <Cell key="cell-available" fill={COLORS[1]} />
-                                </Pie>
-                                <Tooltip />
-                                <Legend />
-                              </PieChart>
-                            </ResponsiveContainer>
-                          </div>
-                        ))}
+                        {courseDetails.sections
+                          .filter(section => section.actualEnrollment > 0)
+                          .map((section, idx) => (
+                            <div key={idx} style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.07)', padding: '16px' }}>
+                              <h4 style={{ margin: '0 0 10px 0', color: '#2c3e50', fontSize: '18px' }}>
+                                Section {section.section}
+                                {showLastName && section.instructor ? ` (${getLastName(section.instructor)})` : ''}
+                              </h4>
+                              <ResponsiveContainer width="100%" height={220}>
+                                <PieChart>
+                                  <Pie
+                                    data={[
+                                      { name: 'Enrolled', value: section.actualEnrollment, fill: COLORS[0] },
+                                      { name: 'Available', value: Math.max(section.maxEnrollment - section.actualEnrollment, 0), fill: COLORS[1] }
+                                    ]}
+                                    cx="50%"
+                                    cy="50%"
+                                    labelLine={true}
+                                    label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                                    outerRadius={80}
+                                    dataKey="value"
+                                  >
+                                    <Cell key="cell-enrolled" fill={COLORS[0]} />
+                                    <Cell key="cell-available" fill={COLORS[1]} />
+                                  </Pie>
+                                  <Tooltip />
+                                  <Legend />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            </div>
+                          ))}
                       </div>
                     );
                   })()
