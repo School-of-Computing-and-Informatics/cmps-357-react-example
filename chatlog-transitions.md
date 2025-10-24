@@ -110,3 +110,43 @@ Please test the transitions. If you see any further glitches or need more refine
 
 **Result:**
 - The bar chart now accurately reflects unique student counts for CMPS 150 and CMPS 260, using only the correct section-level data for aggregation.
+
+
+---
+
+## Session 7: Bar Chart Controls and Stacking Order
+
+**User:** Add check boxes so users can omit or include each of the four items from the bar chart. When no items are selected, default to `Actual Enrollment`.
+
+**GitHub Copilot:**
+- Added a checkbox control panel in `EnrollmentOverview.jsx` with four options: Actual Enrollment, Lab-Only Enrollment, Available Seats, Excess Enrollment.
+- If no boxes are checked, the chart defaults to showing Actual Enrollment.
+- A new computed series `labOnlyEnrollment` was added (sum of section enrollments with `scheduleType: 'Lab'`) so it can be displayed independently.
+
+**User:** When I uncheck lab and then recheck it, the lab bar appears above Available/Excess.
+
+**Why the initial order fix didn’t work:**
+- We first enforced mapping bars in a fixed order by iterating over a constant `BAR_OPTIONS` array and conditionally rendering bars that were selected.
+- However, conditional rendering unmounts/remounts `<Bar>` elements. Recharts determines stack order by the order components are registered at mount time. After toggling, the re-mounted bar was registered last and appeared on top, despite the JSX loop order.
+- In this context, “mount” is when a React component (e.g., a Bar) is inserted into the DOM and registered by Recharts, and its mount order determines the stack order—toggling visibility can unmount and remount it later, placing it on top.
+
+**Final fix:**
+- Keep all four `<Bar>` elements mounted in a fixed order at all times and control visibility via the `hide` prop, e.g.:
+
+```jsx
+{BAR_OPTIONS.map(opt => (
+  <Bar
+    key={opt.key}
+    dataKey={opt.key}
+    fill={opt.color}
+    name={opt.label}
+    stackId="enroll"
+    hide={!barsToShow.includes(opt.key)}
+  />
+))}
+```
+
+- This preserves the registration order (Actual at bottom, then Lab-Only, Available, Excess) regardless of checkbox toggling, while still omitting unchecked series from view.
+
+**Result:**
+- Users can toggle any combination of bars, the default is Actual-only when none are selected, and the stacking order remains consistent.

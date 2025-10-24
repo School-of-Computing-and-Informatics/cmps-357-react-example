@@ -75,15 +75,15 @@ const EnrollmentOverview = ({ allCourses }) => {
             <Tooltip />
             <Legend />
             {BAR_OPTIONS.map(opt => (
-              barsToShow.includes(opt.key) ? (
-                <Bar
-                  key={opt.key}
-                  dataKey={opt.key}
-                  fill={opt.color}
-                  name={opt.label}
-                  stackId="enroll"
-                />
-              ) : null
+              <Bar
+                key={opt.key}
+                dataKey={opt.key}
+                fill={opt.color}
+                name={opt.label}
+                stackId="enroll"
+                // Keep order fixed; just hide when not selected (or when defaulting)
+                hide={!barsToShow.includes(opt.key)}
+              />
             ))}
           </BarChart>
         </ResponsiveContainer>
