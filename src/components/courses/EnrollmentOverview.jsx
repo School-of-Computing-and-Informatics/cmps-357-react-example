@@ -70,9 +70,9 @@ const EnrollmentOverview = ({ allCourses, selectedCourse, loading = false }) => 
                 {opt.label}
               </span>
             </label>
-          ))}
-        </div>
-        <ResponsiveContainer width="100%" height={400}>
+      ))}
+    </div>
+    <ResponsiveContainer width="100%" height={400}>
           <BarChart
             data={filteredCourses}
             margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
@@ -126,22 +126,22 @@ const EnrollmentOverview = ({ allCourses, selectedCourse, loading = false }) => 
                     const yMax = 20; // Chart margin top is 20, so y=20 is the top of the axis area
                     return (
                       <g>
-                          <rect
-                            x={barProps.x - 3}
-                            y={yMax}
-                            width={barProps.width + 6}
-                            height={y0 - yMax}
-                            fill="#FFF9E3" // pale gold interior
-                            stroke="#FFD700"
-                            strokeWidth={4}
-                            rx={6}
-                            ry={6}
-                            opacity={0}
-                          >
-                            {/* Animate opacity and stroke width on mount so the gold appears smoothly */}
-                            <animate attributeName="opacity" from="0" to="1" dur="1200ms" fill="freeze" />
-                            <animate attributeName="stroke-width" from="0" to="4" dur="1200ms" fill="freeze" />
-                          </rect>
+                        {/* Gold background: grow from the bottom (y0) to yMax by animating y and height */}
+                        <rect
+                          x={barProps.x - 3}
+                          y={y0}
+                          width={barProps.width + 6}
+                          height={0}
+                          fill="#ffd9002a"
+                          stroke="#FFD700"
+                          strokeWidth={0}
+                          rx={6}
+                          ry={6}
+                        >
+                          <animate attributeName="height" from="0" to={y0 - yMax} dur="600ms" begin="400ms" fill="freeze" />
+                          <animate attributeName="y" from={y0} to={yMax} dur="600ms" begin="400ms" fill="freeze" />
+                          <animate attributeName="stroke-width" from="0" to="4" dur="600ms" begin="400ms" fill="freeze" />
+                        </rect>
                         <rect
                           x={barProps.x}
                           y={barProps.y}
