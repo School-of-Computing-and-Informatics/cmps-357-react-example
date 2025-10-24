@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { CHART_COLORS } from '../../utils/courseUtils';
 
 const EnrollmentStats = ({ enrollmentStats }) => {
+
+  const [selectedIndex, setSelectedIndex] = useState(null);
   if (!enrollmentStats) return null;
 
   return (
@@ -89,7 +91,15 @@ const EnrollmentStats = ({ enrollmentStats }) => {
               dataKey="value"
             >
               {[0, 1, 2].map((index) => (
-                <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={CHART_COLORS[index % CHART_COLORS.length]}
+                  stroke={selectedIndex === index ? '#e74c3c' : undefined}
+                  strokeWidth={selectedIndex === index ? 5 : 1}
+                  style={{ cursor: 'pointer', outline: 'none' }}
+                  tabIndex={-1}
+                  onClick={() => setSelectedIndex(index)}
+                />
               ))}
             </Pie>
             <Tooltip />
