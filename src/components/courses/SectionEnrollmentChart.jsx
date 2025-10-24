@@ -51,7 +51,9 @@ const SectionEnrollmentChart = ({ sections }) => {
           <div key={idx} style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.07)', padding: '16px' }}>
             <h4 style={{ margin: '0 0 10px 0', color: '#2c3e50', fontSize: '18px' }}>
               Section {section.section}
-              {showLastName && section.instructor ? ` (${getLastName(section.instructor)})` : ''}
+              {/^01\d$/.test(section.section)
+                ? ' (Lab Section)'
+                : (showLastName && section.instructor ? ` (${getLastName(section.instructor)})` : '')}
             </h4>
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
