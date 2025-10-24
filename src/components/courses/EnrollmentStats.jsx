@@ -99,6 +99,7 @@ const EnrollmentStats = ({ enrollmentStats }) => {
                   fill={CHART_COLORS[index % CHART_COLORS.length]}
                   stroke={selectedIndex === index ? '#e74c3c' : undefined}
                   strokeWidth={selectedIndex === index ? 5 : 1}
+                  strokeLinejoin={selectedIndex === index ? 'bevel' : undefined}
                   style={{ cursor: 'pointer', outline: 'none' }}
                   tabIndex={-1}
                   onClick={e => {
