@@ -38,7 +38,28 @@ const useCourseData = () => {
         const coursesResponse = await fetch('/api/courses');
         if (!coursesResponse.ok) throw new Error('Failed to fetch courses');
         const coursesData = await coursesResponse.json();
-        setAllCourses(coursesData);
+
+        // Fetch detailed section data for CMPS-150 and CMPS-260
+        const [cmps150Res, cmps260Res] = await Promise.all([
+          fetch('/api/courses/CMPS-150'),
+          fetch('/api/courses/CMPS-260')
+        ]);
+        const [cmps150Data, cmps260Data] = await Promise.all([
+          cmps150Res.ok ? cmps150Res.json() : Promise.resolve(null),
+          cmps260Res.ok ? cmps260Res.json() : Promise.resolve(null)
+        ]);
+
+        // Replace CMPS-150 and CMPS-260 in coursesData.courses with detailed section data
+        const updatedCourses = coursesData.courses.map(course => {
+          if (course.courseKey === 'CMPS-150' && cmps150Data && cmps150Data.sections) {
+            return { ...course, sections: cmps150Data.sections };
+          }
+          if (course.courseKey === 'CMPS-260' && cmps260Data && cmps260Data.sections) {
+            return { ...course, sections: cmps260Data.sections };
+          }
+          return course;
+        });
+        setAllCourses({ ...coursesData, courses: updatedCourses });
 
         // Fetch enrollment stats
         const statsResponse = await fetch('/api/courses/stats/enrollment');

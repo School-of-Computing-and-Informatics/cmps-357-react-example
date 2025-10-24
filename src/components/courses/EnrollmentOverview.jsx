@@ -32,6 +32,7 @@ const EnrollmentOverview = ({ allCourses }) => {
             <Tooltip />
             <Legend />
             <Bar dataKey="totalActualEnrollment" fill="#3498db" name="Actual Enrollment" stackId="enroll" />
+            <Bar dataKey="labOnlyEnrollment" fill="#FFBB28" name="Lab-Only Enrollment" stackId="enroll" />
             <Bar dataKey="availableSeats" fill="#95a5a6" name="Available Seats" stackId="enroll" />
             <Bar dataKey="excessEnrollment" fill="#e74c3c" name="Excess Enrollment" stackId="enroll" />
           </BarChart>

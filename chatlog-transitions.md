@@ -97,3 +97,16 @@ Please test the transitions. If you want to tweak the animation timing, directio
 **GitHub Copilot:** The transition logic now ensures the destination page only animates in once and remains visible after the transition. The double transition and disappearance issue should be resolved.
 
 Please test the transitions. If you see any further glitches or need more refinements, let me know!
+
+---
+
+## Session 6: Bar Chart Enrollment Aggregation for CMPS 150 and 260
+
+**User:** Looks like the bar chart is falling back to the course totals even when there is a `sections`. Make sure the barchart uses `http://localhost:3001/api/courses/cmps-150` when getting data for CMPS 150.
+
+**GitHub Copilot:**
+- **Initial attempts** to fix double counting in the bar chart involved filtering out lab sections and summing only lecture enrollments using the section data available in the main `/api/courses` endpoint. However, this did not work for CMPS 150 and CMPS 260 because the summary data sometimes lacked complete or up-to-date `sections` arrays, causing the logic to fall back to precomputed course totals (which include duplicate enrollments).
+- **Final fix:** The data loading logic was updated to fetch detailed section data for both CMPS 150 and CMPS 260 from their respective endpoints (`/api/courses/CMPS-150` and `/api/courses/CMPS-260`). Their `sections` arrays are merged into the main course list before passing to the bar chart. This ensures the bar chart for these courses is always based on accurate section-level data, not fallback totals, and eliminates double counting.
+
+**Result:**
+- The bar chart now accurately reflects unique student counts for CMPS 150 and CMPS 260, using only the correct section-level data for aggregation.
