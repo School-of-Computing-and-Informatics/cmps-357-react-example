@@ -3,11 +3,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { processCourseData } from '../../utils/courseUtils';
 
 const EnrollmentOverview = ({ allCourses }) => {
-  if (!allCourses) return null;
-
-
-  const filteredCourses = processCourseData(allCourses.courses);
-
   // Bar options
   // Always keep this order: actual, lab-only, available, excess
   const BAR_OPTIONS = [
@@ -18,6 +13,10 @@ const EnrollmentOverview = ({ allCourses }) => {
   ];
 
   const [selectedBars, setSelectedBars] = useState(['totalActualEnrollment', 'labOnlyEnrollment', 'availableSeats', 'excessEnrollment']);
+
+  if (!allCourses) return null;
+
+  const filteredCourses = processCourseData(allCourses.courses);
 
 
   // Always show bars in BAR_OPTIONS order, omitting unchecked
