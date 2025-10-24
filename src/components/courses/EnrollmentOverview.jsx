@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { processCourseData } from '../../utils/courseUtils';
 
-const EnrollmentOverview = ({ allCourses }) => {
+const EnrollmentOverview = ({ allCourses, selectedCourse }) => {
   // Bar options
   // Always keep this order: actual, lab-only, available, excess
   const BAR_OPTIONS = [
     { key: 'totalActualEnrollment', label: 'Actual Enrollment', color: '#3498db' },
-    { key: 'labOnlyEnrollment', label: 'Lab-Only Enrollment', color: '#FFBB28' },
+    { key: 'labOnlyEnrollment', label: 'Lab-Only Enrollment', color: '#b6eec7' }, // pale green
     { key: 'availableSeats', label: 'Available Seats', color: '#95a5a6' },
     { key: 'excessEnrollment', label: 'Excess Enrollment', color: '#e74c3c' },
   ];
@@ -54,7 +54,16 @@ const EnrollmentOverview = ({ allCourses }) => {
                 checked={selectedBars.includes(opt.key)}
                 onChange={() => handleCheckboxChange(opt.key)}
               />
-              <span style={{ color: opt.color }}>{opt.label}</span>
+              <span
+                style={{
+                  color:
+                    opt.key === 'labOnlyEnrollment'
+                      ? '#217a3c' // dark green for contrast
+                      : opt.color
+                }}
+              >
+                {opt.label}
+              </span>
             </label>
           ))}
         </div>
@@ -72,7 +81,14 @@ const EnrollmentOverview = ({ allCourses }) => {
             />
             <YAxis />
             <Tooltip />
-            <Legend />
+            <Legend
+              formatter={(value, entry) => {
+                if (value === 'Lab-Only Enrollment') {
+                  return <span style={{ color: '#217a3c', fontWeight: 500 }}>{value}</span>;
+                }
+                return <span style={{ color: entry.color }}>{value}</span>;
+              }}
+            />
             {BAR_OPTIONS.map(opt => (
               <Bar
                 key={opt.key}
@@ -80,8 +96,45 @@ const EnrollmentOverview = ({ allCourses }) => {
                 fill={opt.color}
                 name={opt.label}
                 stackId="enroll"
-                // Keep order fixed; just hide when not selected (or when defaulting)
                 hide={!barsToShow.includes(opt.key)}
+                // Highlight the selected course's bar with a gold rectangle (only for the first bar type)
+                shape={barProps => {
+                  const isSelected = selectedCourse && barProps.payload && (barProps.payload.courseNumber === selectedCourse || barProps.payload.courseKey === selectedCourse);
+                  if (opt.key === 'totalActualEnrollment' && isSelected) {
+                    return (
+                      <g>
+                        <rect
+                          x={barProps.x - 3}
+                          y={barProps.y - 3}
+                          width={barProps.width + 6}
+                          height={barProps.height + 6}
+                          fill="none"
+                          stroke="#FFD700"
+                          strokeWidth={4}
+                          rx={6}
+                          ry={6}
+                        />
+                        <rect
+                          x={barProps.x}
+                          y={barProps.y}
+                          width={barProps.width}
+                          height={barProps.height}
+                          fill={barProps.fill}
+                        />
+                      </g>
+                    );
+                  }
+                  // Default bar
+                  return (
+                    <rect
+                      x={barProps.x}
+                      y={barProps.y}
+                      width={barProps.width}
+                      height={barProps.height}
+                      fill={barProps.fill}
+                    />
+                  );
+                }}
               />
             ))}
           </BarChart>

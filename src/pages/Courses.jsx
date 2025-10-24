@@ -40,7 +40,7 @@ const Courses = () => {
 
       {!loading && !error && (
         <>
-          <EnrollmentOverview allCourses={allCourses} />
+          <EnrollmentOverview allCourses={allCourses} selectedCourse={selectedCourse} />
           <CourseDetails courseDetails={courseDetails} selectedCourse={selectedCourse} />
           <EnrollmentStats enrollmentStats={enrollmentStats} />
         </>
