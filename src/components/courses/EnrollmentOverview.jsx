@@ -100,15 +100,26 @@ const EnrollmentOverview = ({ allCourses, selectedCourse }) => {
                 // Highlight the selected course's bar with a gold rectangle (only for the first bar type)
                 shape={barProps => {
                   const isSelected = selectedCourse && barProps.payload && (barProps.payload.courseNumber === selectedCourse || barProps.payload.courseKey === selectedCourse);
+                  // Fix: Use y-axis scale to get the correct y and height for the gold rectangle
+                  // barProps.yAxis is available in recharts >=2.1.0, but if not, we can estimate from barProps.y and barProps.height
+                  // We'll use the bottom of the bar (barProps.y + barProps.height) as y0 (y-axis 0), and the top of the bar area as yMax
+                  // The gold rect should start at y=barProps.y + barProps.height and end at y=barProps.y(0) of the tallest bar
+                  // For a robust solution, use the chart's y=0 for axis 0, and y of the tallest bar for axis max
                   if (opt.key === 'totalActualEnrollment' && isSelected) {
+                    // Estimate y0 (y-axis 0) and yMax (y-axis max) from barProps and chart height
+                    // barProps.y is the top of the bar, barProps.height is the bar's height
+                    // y0 = barProps.y + barProps.height (bottom of bar, y-axis 0)
+                    // yMax = Math.min(barProps.y, 380) (top of chart area, y-axis max, fudge for margin)
+                    const y0 = barProps.y + barProps.height;
+                    const yMax = 20; // Chart margin top is 20, so y=20 is the top of the axis area
                     return (
                       <g>
                         <rect
                           x={barProps.x - 3}
-                          y={barProps.y - 3}
+                          y={yMax}
                           width={barProps.width + 6}
-                          height={barProps.height + 6}
-                          fill="none"
+                          height={y0 - yMax}
+                          fill="#FFF9E3" // pale gold interior
                           stroke="#FFD700"
                           strokeWidth={4}
                           rx={6}
