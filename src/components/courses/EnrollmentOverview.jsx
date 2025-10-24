@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { processCourseData } from '../../utils/courseUtils';
 
-const EnrollmentOverview = ({ allCourses, selectedCourse }) => {
+const EnrollmentOverview = ({ allCourses, selectedCourse, loading = false }) => {
   // Bar options
   // Always keep this order: actual, lab-only, available, excess
   const BAR_OPTIONS = [
@@ -13,10 +13,10 @@ const EnrollmentOverview = ({ allCourses, selectedCourse }) => {
   ];
 
   const [selectedBars, setSelectedBars] = useState(['totalActualEnrollment', 'labOnlyEnrollment', 'availableSeats', 'excessEnrollment']);
+  const [showGold, setShowGold] = useState(false);
 
-  if (!allCourses) return null;
-
-  const filteredCourses = processCourseData(allCourses.courses);
+  // Safely process courses only when available and memoize to avoid unnecessary re-calcs
+  const filteredCourses = useMemo(() => (allCourses ? processCourseData(allCourses.courses) : []), [allCourses]);
 
 
   // Always show bars in BAR_OPTIONS order, omitting unchecked
@@ -35,6 +35,11 @@ const EnrollmentOverview = ({ allCourses, selectedCourse }) => {
       }
     });
   };
+
+  // Reset gold indicator while loading or when data/selection changes
+  useEffect(() => {
+    setShowGold(false);
+  }, [loading, filteredCourses, selectedCourse]);
 
   return (
     <section style={{ marginBottom: '40px' }}>
@@ -89,7 +94,9 @@ const EnrollmentOverview = ({ allCourses, selectedCourse }) => {
                 return <span style={{ color: entry.color }}>{value}</span>;
               }}
             />
-            {BAR_OPTIONS.map(opt => (
+            {BAR_OPTIONS.map(opt => {
+              const isLastVisible = barsToShow[barsToShow.length - 1] === opt.key;
+              return (
               <Bar
                 key={opt.key}
                 dataKey={opt.key}
@@ -97,6 +104,9 @@ const EnrollmentOverview = ({ allCourses, selectedCourse }) => {
                 name={opt.label}
                 stackId="enroll"
                 hide={!barsToShow.includes(opt.key)}
+                onAnimationEnd={() => {
+                  if (isLastVisible) setShowGold(true);
+                }}
                 // Highlight the selected course's bar with a gold rectangle (only for the first bar type)
                 shape={barProps => {
                   const isSelected = selectedCourse && barProps.payload && (barProps.payload.courseNumber === selectedCourse || barProps.payload.courseKey === selectedCourse);
@@ -105,7 +115,9 @@ const EnrollmentOverview = ({ allCourses, selectedCourse }) => {
                   // We'll use the bottom of the bar (barProps.y + barProps.height) as y0 (y-axis 0), and the top of the bar area as yMax
                   // The gold rect should start at y=barProps.y + barProps.height and end at y=barProps.y(0) of the tallest bar
                   // For a robust solution, use the chart's y=0 for axis 0, and y of the tallest bar for axis max
-                  if (opt.key === 'totalActualEnrollment' && isSelected) {
+                  // Only show the gold indicator after data has finished loading and there is chart data
+                  const shouldShowGold = !loading && filteredCourses && filteredCourses.length > 0 && showGold;
+                  if (opt.key === 'totalActualEnrollment' && isSelected && shouldShowGold) {
                     // Estimate y0 (y-axis 0) and yMax (y-axis max) from barProps and chart height
                     // barProps.y is the top of the bar, barProps.height is the bar's height
                     // y0 = barProps.y + barProps.height (bottom of bar, y-axis 0)
@@ -114,17 +126,22 @@ const EnrollmentOverview = ({ allCourses, selectedCourse }) => {
                     const yMax = 20; // Chart margin top is 20, so y=20 is the top of the axis area
                     return (
                       <g>
-                        <rect
-                          x={barProps.x - 3}
-                          y={yMax}
-                          width={barProps.width + 6}
-                          height={y0 - yMax}
-                          fill="#FFF9E3" // pale gold interior
-                          stroke="#FFD700"
-                          strokeWidth={4}
-                          rx={6}
-                          ry={6}
-                        />
+                          <rect
+                            x={barProps.x - 3}
+                            y={yMax}
+                            width={barProps.width + 6}
+                            height={y0 - yMax}
+                            fill="#FFF9E3" // pale gold interior
+                            stroke="#FFD700"
+                            strokeWidth={4}
+                            rx={6}
+                            ry={6}
+                            opacity={0}
+                          >
+                            {/* Animate opacity and stroke width on mount so the gold appears smoothly */}
+                            <animate attributeName="opacity" from="0" to="1" dur="1200ms" fill="freeze" />
+                            <animate attributeName="stroke-width" from="0" to="4" dur="1200ms" fill="freeze" />
+                          </rect>
                         <rect
                           x={barProps.x}
                           y={barProps.y}
@@ -147,7 +164,8 @@ const EnrollmentOverview = ({ allCourses, selectedCourse }) => {
                   );
                 }}
               />
-            ))}
+              );
+            })}
           </BarChart>
         </ResponsiveContainer>
         <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#ecf0f1', borderRadius: '6px' }}>
