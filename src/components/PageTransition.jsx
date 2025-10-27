@@ -54,7 +54,9 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
     position: 'relative',
     width: '100vw', // Ensure full viewport width during transition
     overflow: 'hidden',
-    minHeight: '100vh'
+    minHeight: '100vh',
+    perspective: '1000px', // Enable 3D rendering context for GPU acceleration
+    transformStyle: 'preserve-3d'
   };
 
   const exitingPageStyle = {
@@ -65,11 +67,13 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
     transform:
       isTransitioning
         ? (outgoingActive
-            ? 'translateX(0)'
-            : (direction === 'left' ? 'translateX(-100%)' : 'translateX(100%)'))
-        : 'translateX(0)',
+            ? 'translate3d(0, 0, 0)'
+            : (direction === 'left' ? 'translate3d(-100%, 0, 0)' : 'translate3d(100%, 0, 0)'))
+        : 'translate3d(0, 0, 0)',
     transition: `transform ${transitionDuration}ms ease-in-out`,
     willChange: 'transform',
+    backfaceVisibility: 'hidden', // Create separate layer for GPU acceleration
+    WebkitBackfaceVisibility: 'hidden', // Safari support
     opacity: 1,
     pointerEvents: isTransitioning ? 'none' : 'auto'
   };
@@ -82,11 +86,13 @@ const PageTransition = ({ transitionDuration = 1000 }) => {
     transform:
       isTransitioning
         ? (incomingActive
-            ? (direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)')
-            : 'translateX(0)')
-        : (direction === 'left' ? 'translateX(100%)' : 'translateX(-100%)'),
+            ? (direction === 'left' ? 'translate3d(100%, 0, 0)' : 'translate3d(-100%, 0, 0)')
+            : 'translate3d(0, 0, 0)')
+        : (direction === 'left' ? 'translate3d(100%, 0, 0)' : 'translate3d(-100%, 0, 0)'),
     transition: `transform ${transitionDuration}ms ease-in-out`,
     willChange: 'transform',
+    backfaceVisibility: 'hidden', // Create separate layer for GPU acceleration
+    WebkitBackfaceVisibility: 'hidden', // Safari support
     pointerEvents: isTransitioning ? 'none' : 'auto'
   };
 

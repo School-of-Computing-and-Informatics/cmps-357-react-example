@@ -97,3 +97,68 @@ Please test the transitions. If you want to tweak the animation timing, directio
 **GitHub Copilot:** The transition logic now ensures the destination page only animates in once and remains visible after the transition. The double transition and disappearance issue should be resolved.
 
 Please test the transitions. If you see any further glitches or need more refinements, let me know!
+
+---
+
+## Session 6: Bar Chart Enrollment Aggregation for CMPS 150 and 260
+
+**User:** Looks like the bar chart is falling back to the course totals even when there is a `sections`. Make sure the barchart uses `http://localhost:3001/api/courses/cmps-150` when getting data for CMPS 150.
+
+**GitHub Copilot:**
+- **Initial attempts** to fix double counting in the bar chart involved filtering out lab sections and summing only lecture enrollments using the section data available in the main `/api/courses` endpoint. However, this did not work for CMPS 150 and CMPS 260 because the summary data sometimes lacked complete or up-to-date `sections` arrays, causing the logic to fall back to precomputed course totals (which include duplicate enrollments).
+- **Final fix:** The data loading logic was updated to fetch detailed section data for both CMPS 150 and CMPS 260 from their respective endpoints (`/api/courses/CMPS-150` and `/api/courses/CMPS-260`). Their `sections` arrays are merged into the main course list before passing to the bar chart. This ensures the bar chart for these courses is always based on accurate section-level data, not fallback totals, and eliminates double counting.
+
+**Result:**
+- The bar chart now accurately reflects unique student counts for CMPS 150 and CMPS 260, using only the correct section-level data for aggregation.
+
+
+---
+
+## Session 7: Bar Chart Controls and Stacking Order
+
+**User:** Add check boxes so users can omit or include each of the four items from the bar chart. When no items are selected, default to `Actual Enrollment`.
+
+**GitHub Copilot:**
+- Added a checkbox control panel in `EnrollmentOverview.jsx` with four options: Actual Enrollment, Lab-Only Enrollment, Available Seats, Excess Enrollment.
+- If no boxes are checked, the chart defaults to showing Actual Enrollment.
+- A new computed series `labOnlyEnrollment` was added (sum of section enrollments with `scheduleType: 'Lab'`) so it can be displayed independently.
+
+**User:** When I uncheck lab and then recheck it, the lab bar appears above Available/Excess.
+
+**Why the initial order fix didn’t work:**
+- We first enforced mapping bars in a fixed order by iterating over a constant `BAR_OPTIONS` array and conditionally rendering bars that were selected.
+- However, conditional rendering unmounts/remounts `<Bar>` elements. Recharts determines stack order by the order components are registered at mount time. After toggling, the re-mounted bar was registered last and appeared on top, despite the JSX loop order.
+- In this context, “mount” is when a React component (e.g., a Bar) is inserted into the DOM and registered by Recharts, and its mount order determines the stack order—toggling visibility can unmount and remount it later, placing it on top.
+
+**Final fix:**
+- Keep all four `<Bar>` elements mounted in a fixed order at all times and control visibility via the `hide` prop, e.g.:
+
+```jsx
+{BAR_OPTIONS.map(opt => (
+  <Bar
+    key={opt.key}
+    dataKey={opt.key}
+    fill={opt.color}
+    name={opt.label}
+    stackId="enroll"
+    hide={!barsToShow.includes(opt.key)}
+  />
+))}
+```
+
+- This preserves the registration order (Actual at bottom, then Lab-Only, Available, Excess) regardless of checkbox toggling, while still omitting unchecked series from view.
+
+**Result:**
+- Users can toggle any combination of bars, the default is Actual-only when none are selected, and the stacking order remains consistent.
+
+---
+
+## Session 8: Gold Bar Animation and Pie Wedge Line Join
+
+**User:** Make the gold indicator bar in the enrollment overview animate in sync with the stacked bars, scaling up from the axis, and add a delay before its animation. Also, make selected pie wedges use a bevel line join for their red stroke.
+
+**GitHub Copilot:**
+- The gold indicator bar now animates by scaling up from the axis (using SVG `<animate>` on `y` and `height`), matching the stacked bar animation. A 400ms delay is added before the gold bar animation begins, so it appears after the bars finish animating.
+- For the enrollment statistics pie chart, selected wedges (with a red stroke) now use `strokeLinejoin="bevel"` for a beveled join on the outline.
+
+Please test the gold bar and pie chart interactions. Let me know if you want to further adjust the animation timing or visual style!

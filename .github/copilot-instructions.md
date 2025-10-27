@@ -48,8 +48,11 @@ This is a React + Vite educational project for CMPS 357, demonstrating multi-pag
 </div>
 ```
 
+
 ## Integration Points
-- No backend/API calls; all data is static or local
+- **Backend/API:** This project includes an Express backend server (see `server.js`) that provides mock data via documented API endpoints (see `SERVER_README.md`).
+  - Example endpoints: `/api/courses`, `/api/courses/:courseCode`, `/api/timesteps`, `/api/data/:timeStep`
+- **Frontend API usage:** React components fetch data from these endpoints (e.g., for course and enrollment visualizations).
 - No global state management (Redux, Context) in this example
 - All navigation is client-side via React Router
 
